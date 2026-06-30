@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laptops — RAZER</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+<div class="container hero">
+  <div class="container-logo">
+    <i class="fa-solid fa-computer"></i>
+    <h1 class="logo">RAZER</h1>
+  </div>
+  <div class="container-user">
+    <a href="login.html" id="user-link"><i class="fa-solid fa-user"></i></a>
+    <div class="cart-icon">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span id="cart-count">0</span>
+    </div>
+  </div>
+</div>
+<div class="container-navbar">
+  <nav class="navbar container">
+    <i class="fa-solid fa-bars"></i>
+    <ul class="menu">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="monitores.html">Monitores</a></li>
+      <li><a href="laptops.html">Laptops</a></li>
+      <li><a href="componentes.html">Componentes</a></li>
+    </ul>
+  </nav>
+</div>
+</header>
+
+<br><br><br>
+
+<!-- PRODUCTOS -->
+<section class="container top-products">
+  <div class="container-h1"><h1>Laptops</h1></div>
+  <div class="container-products" id="productos-container">
+    <p style="text-align:center;color:#aaa;padding:2rem;">Cargando productos...</p>
+  </div>
+</section>
+
+<br><br><br>
+
+
+
+<!-- PANEL CARRITO -->
+<div id="cart-panel" class="cart-panel">
+  <div class="cart-header">
+    <h2>Tu carrito</h2>
+    <span id="close-cart">✖</span>
+  </div>
+  <div id="cart-items" class="cart-items"></div>
+  <div class="cart-footer">
+    <h3>Total: <span id="cart-total">$0</span></h3>
+    <button id="buy-cart">Comprar</button>
+    <button id="clear-cart">Vaciar carrito</button>
+  </div>
+</div>
+
+<div id="footer-container"></div>
+<script src="footer/footer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/92b8cfdb2b.js" crossorigin="anonymous"></script>
+<script src="carrito-frontend.js"></script>
+
+<script>
+// Menú hamburguesa
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector(".fa-bars").addEventListener("click", function () {
+    document.querySelector(".menu").classList.toggle("active");
+  });
+});
+
+// Leer más / menos (delegado)
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".btn-read-more");
+  if (!btn) return;
+  const card = btn.closest(".card-product");
+  const expanded = card.classList.contains("expanded");
+  document.querySelectorAll(".card-product").forEach(p => {
+    p.classList.remove("expanded");
+    const b = p.querySelector(".btn-read-more");
+    if (b) b.textContent = "Leer más";
+  });
+  if (!expanded) {
+    card.classList.add("expanded");
+    btn.textContent = "Leer menos";
+  }
+});
+
+// Mapeo manual de imágenes por id_producto
+const imagenesLaptops = {
+  10: "img/laptops/Notebook Hp Gaming Victus 15.png",
+  11: "img/laptops/Lenovo ThinkPad E16 Gen 2 R5.png",
+  12: "img/laptops/Notebook Asus Vivobook M1502ya-bq580 Ryzen 7 5825u 16gb De Ram Ddr4 512gb Ssd M.2 Nvme Pcie, Amd Radeon Graphics (15,6) Full Hd 1920 X 1080 Ips Wi-fi 6e (802.11ax) Windows 11 Home, Color Cool S.png",
+  13: "img/laptops/Notebook Asus Vivobook X1404va-i512256 Intel Core I5 1334u 12gb Ram 256gb Ssd M.2 14 Fhd Ips Teclado Ingles W11 Liviana Color Quiet Blue Hf (2).png",
+  14: "img/laptops/Notebook Ryzen 5 3500u 16gb Ram 256gb Ssd 15.6 Gen2 Ryer Gris (2).png",
+  15: "img/laptops/Notebook Lenovo Ideapad 1 14IJL7 Procesador Intel Celeron N4500 4gb Ram Ddr4 128gb SSD Pantalla 14 HD Windows 11 S Color Gris.png",
+  16: "img/laptops/Notebook HP 15-fd2350la Intel Core Ultra 5 8GB RAM 512GB SSD 15,6 FHD Windows 11 Home (2).png",
+  17: "img/laptops/Notebook HP 255 G10 Ryzen 7.png",
+  18: "img/laptops/Notebook Hp 255 G10 Amd Ryzen 7 7730u 32gb Ssd 512gb Gris Oscuro (2).png"
+};
+
+// Cargar productos desde la API
+document.addEventListener("DOMContentLoaded", async () => {
+  const container = document.getElementById("productos-container");
+
+  try {
+    const res = await fetch("/api/productos");
+    if (!res.ok) throw new Error("Error al conectar con el servidor");
+    const productos = await res.json();
+
+    // Filtrar solo laptops (id_categoria 2)
+    const laptops = productos.filter(p => p.id_categoria === 2);
+
+    if (!laptops.length) {
+      container.innerHTML = '<p style="text-align:center;color:#aaa;">No se encontraron laptops.</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+    productosLocales = laptops;
+
+    laptops.forEach(producto => {
+      const img = imagenesLaptops[producto.id_producto] || "img/placeholder.png";
+      const card = document.createElement("div");
+      card.classList.add("card-product");
+      card.innerHTML = `
+        <div class="container-img">
+          <img src="${img}" alt="${producto.nombre_producto}" />
+        </div>
+        <div class="content-card-product">
+
+          <h3>${producto.nombre_producto}</h3>
+          <span class="add-cart"
+            data-id="${producto.id_producto}"
+            data-name="${producto.nombre_producto}"
+            data-price="${producto.precio}"
+            data-section="laptops">
+            <i class="fa-solid fa-basket-shopping"></i>
+          </span>
+          <p class="price">$${Number(producto.precio).toLocaleString("es-AR")}</p>
+          <button class="btn-read-more">Leer más</button>
+          <ul class="more-info">
+            ${(producto.descripcion || "Sin descripción").split("|").map(s => `<li>${s.trim()}</li>`).join("")}
+            <li>Stock disponible: ${producto.stock} unidades</li>
+          </ul>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `
+      <p style="text-align:center;color:#e44;padding:1rem;">
+        ⚠️ No se pudo conectar al servidor.<br>
+        <small>Intentá nuevamente más tarde</small>
+      </p>`;
+  }
+});
+</script>
+
+</body>
+</html>

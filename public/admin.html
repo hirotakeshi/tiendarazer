@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — RAZER</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+ 
+<!-- Pantalla 403: se muestra si el usuario no es admin -->
+<div id="access-denied">
+    <h1>403</h1>
+    <p>No tenés permiso para acceder a esta página.</p>
+    <a href="index.html">← Volver al inicio</a>
+</div>
+ 
+<!-- Barra superior: oculta hasta que se verifique que es admin -->
+<header class="topbar" id="topbar" style="display:none;">
+    <div class="topbar-logo">RAZER <span>/ admin</span></div>
+    <div class="topbar-right">
+        <span class="admin-badge">● Admin</span>
+        <span id="admin-name"></span>
+        <a href="index.html" class="btn-back">← Tienda</a>
+        <button class="btn-logout" id="btn-logout">Cerrar sesión</button>
+    </div>
+</header>
+ 
+<!-- Dashboard principal: también oculto hasta verificar acceso -->
+<main class="main" id="dashboard" style="display:none;">
+ 
+    <div class="page-header">
+        <h1 class="page-title">Panel de ventas</h1>
+        <p class="page-subtitle">Resumen de actividad de la tienda RAZER</p>
+    </div>
+ 
+    <!-- Tarjetas de resumen (ingresos, pedidos, clientes, stock) -->
+    <div class="stats-grid" id="stats-grid">
+        <div class="loading"><div class="spinner"></div> Cargando...</div>
+    </div>
+ 
+
+    <!-- Productos más vendidos -->
+    <p class="section-title">Productos más vendidos</p>
+    <div class="table-wrap">
+        <div class="table-toolbar">
+            <span class="table-toolbar-title">Top 10 productos</span>
+            <input type="search" class="search-input" id="search-productos" placeholder="Buscar producto...">
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Producto</th>
+                        <th>Cat.</th>
+                        <th>Unidades</th>
+                        <th>Ingresos</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="body-productos">
+                    <tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ventas por categoría -->
+    <p class="section-title">Ventas por categoría</p>
+    <div class="table-wrap">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Unidades</th>
+                        <th>Ingresos</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody id="body-categorias">
+                    <tr><td colspan="4"><div class="loading"><div class="spinner"></div></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Stock bajo -->
+    <p class="section-title">Stock bajo (&lt; 5 unidades)</p>
+    <div class="table-wrap">
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr><th>Producto</th><th>Categoría</th><th>Stock</th></tr>
+                </thead>
+                <tbody id="body-stock">
+                    <tr><td colspan="3"><div class="loading"><div class="spinner"></div></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+ 
+    <!-- Tabla de todos los pedidos -->
+    <p class="section-title">Historial de pedidos</p>
+    <div class="table-wrap">
+        <div class="table-toolbar">
+            <span class="table-toolbar-title">Todos los pedidos</span>
+            <input type="search" class="search-input" id="search-pedidos" placeholder="Buscar cliente o pedido...">
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Email</th>
+                        <th>Método</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="body-pedidos">
+                    <tr><td colspan="9"><div class="loading"><div class="spinner"></div> Cargando...</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+ 
+</main>
+ 
+<!-- Modal: detalle de un pedido específico -->
+<div class="modal-overlay" id="modal-detalle">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-pedido-title">Detalle del pedido</span>
+            <button class="modal-close" id="modal-close">✕</button>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+    </div>
+</div>
+<script>
+
+
+ 
+// =====================================================
+// CONFIGURACIÓN INICIAL
+// =====================================================
+ 
+const API       = "/api";
+const USER_KEY  = "razer_user";
+const TOKEN_KEY = "razer_token";
+ 
+let token             = null;
+let todosLosPedidos   = [];
+let todosLosProductos = [];
+ 
+ 
+// =====================================================
+// 1. VERIFICAR ACCESO AL CARGAR LA PÁGINA
+// =====================================================
+ 
+document.addEventListener("DOMContentLoaded", async () => {
+ 
+    // Leer el usuario guardado en localStorage
+    const user = JSON.parse(localStorage.getItem(USER_KEY));
+ 
+    // Si no hay usuario o no es admin, mostrar pantalla 403
+    if (!user || user.rol !== "admin") {
+        document.getElementById("access-denied").style.display = "flex";
+        return;
+    }
+ 
+    // Leer el token JWT guardado
+    token = localStorage.getItem(TOKEN_KEY);
+ 
+    // Si no hay token, la sesión expiró
+    if (!token) {
+        const denied = document.getElementById("access-denied");
+        denied.style.display = "flex";
+        denied.querySelector("p").textContent = "Tu sesión expiró. Por favor iniciá sesión de nuevo.";
+        return;
+    }
+ 
+    // Todo OK: mostrar el panel y el nombre del admin
+    document.getElementById("topbar").style.display    = "flex";
+    document.getElementById("dashboard").style.display = "block";
+    document.getElementById("admin-name").textContent  = user.nombre;
+ 
+    // Cerrar sesión
+    document.getElementById("btn-logout").onclick = () => {
+        localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(TOKEN_KEY);
+        location.href = "index.html";
+    };
+ 
+    // Cargar todos los datos del dashboard
+    cargarDatos();
+});
+ 
+ 
+// =====================================================
+// 2. CARGAR DATOS DESDE LA API
+// =====================================================
+ 
+async function cargarDatos() {
+    const headers = { "Authorization": `Bearer ${token}` };
+ 
+    try {
+        // Todas las peticiones al mismo tiempo (más rápido)
+        const [resumen, productos, pedidos, categorias, stock] = await Promise.all([
+            fetch(`${API}/admin/resumen`,               { headers }).then(r => r.json()),
+            fetch(`${API}/admin/productos-mas-vendidos`, { headers }).then(r => r.json()),
+            fetch(`${API}/admin/pedidos`,                { headers }).then(r => r.json()),
+            fetch(`${API}/admin/ventas-por-categoria`,   { headers }).then(r => r.json()),
+            fetch(`${API}/admin/stock-bajo`,             { headers }).then(r => r.json()),
+        ]);
+ 
+        // Si el token venció, redirigir al login
+        if (resumen.error && resumen.error.includes("autorizado")) {
+            localStorage.removeItem(TOKEN_KEY);
+            location.href = "login.html";
+            return;
+        }
+ 
+        // Renderizar cada sección con sus datos
+        renderResumen(resumen);
+        renderProductos(productos);
+        renderPedidos(pedidos);
+        renderCategorias(categorias);
+        renderStock(stock);
+ 
+    } catch (e) {
+        document.getElementById("stats-grid").innerHTML =
+            '<p style="color:var(--red);padding:1rem;">Error al conectar con el servidor.</p>';
+    }
+}
+ 
+ 
+// =====================================================
+// 3. TARJETAS DE RESUMEN
+// =====================================================
+ 
+function renderResumen(d) {
+    if (d.error) return;
+ 
+    document.getElementById("stats-grid").innerHTML = `
+        <div class="stat-card">
+            <div class="stat-label">Ingresos totales</div>
+            <div class="stat-value" style="color:var(--accent)">$${Number(d.ingresos_totales).toLocaleString("es-AR")}</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-label">Pedidos completados</div>
+            <div class="stat-value">${d.total_pedidos}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Clientes registrados</div>
+            <div class="stat-value">${d.total_clientes}</div>
+        </div>
+        <div class="stat-card ${d.productos_bajo_stock > 0 ? "red" : ""}">
+            <div class="stat-label">Productos bajo stock</div>
+            <div class="stat-value" style="${d.productos_bajo_stock > 0 ? "color:var(--red)" : ""}">${d.productos_bajo_stock}</div>
+        </div>
+    `;
+}
+ 
+ 
+// =====================================================
+// 4. PRODUCTOS MÁS VENDIDOS
+// =====================================================
+ 
+function renderProductos(data) {
+    // Guardar todos para el buscador
+    todosLosProductos = Array.isArray(data) ? data : [];
+    pintarProductos(todosLosProductos);
+}
+ 
+function pintarProductos(data) {
+    const body = document.getElementById("body-productos");
+ 
+    if (!data.length) {
+        body.innerHTML = '<tr><td colspan="6" style="padding:1.5rem;text-align:center;color:var(--muted);">Sin ventas registradas.</td></tr>';
+        return;
+    }
+ 
+    const max = Math.max(...data.map(p => Number(p.unidades_vendidas)));
+ 
+    body.innerHTML = data.map((p, i) => `
+        <tr>
+            <td class="mono" style="color:var(--muted)">${String(i + 1).padStart(2, "0")}</td>
+            <td class="cell-producto">${p.nombre_producto}</td>
+            <td style="font-size:.78rem;color:var(--muted)">${p.categoria}</td>
+            <td>
+                <div class="bar-wrap">
+                    <span class="mono" style="min-width:24px;">${p.unidades_vendidas}</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width:${(Number(p.unidades_vendidas) / max) * 100}%"></div></div>
+                </div>
+            </td>
+            <td class="mono" style="color:var(--accent)">$${Number(p.ingresos).toLocaleString("es-AR")}</td>
+            <td class="mono" style="color:${p.stock_actual < 5 ? "var(--red)" : "var(--muted)"}">${p.stock_actual}</td>
+        </tr>
+    `).join("");
+}
+ 
+// Buscador de productos
+document.getElementById("search-productos").addEventListener("input", function () {
+    const filtro = this.value.toLowerCase();
+    pintarProductos(todosLosProductos.filter(p => p.nombre_producto.toLowerCase().includes(filtro)));
+});
+ 
+ 
+// =====================================================
+// 5. HISTORIAL DE PEDIDOS
+// =====================================================
+ 
+function renderPedidos(data) {
+    // Guardar todos para el buscador
+    todosLosPedidos = Array.isArray(data) ? data : [];
+    pintarPedidos(todosLosPedidos);
+}
+ 
+function pintarPedidos(data) {
+    const body = document.getElementById("body-pedidos");
+ 
+    if (!data.length) {
+        body.innerHTML = '<tr><td colspan="9" style="padding:1.5rem;text-align:center;color:var(--muted);">Sin pedidos.</td></tr>';
+        return;
+    }
+ 
+    // Colores según estado del pedido
+    const colorEstado = { pagado: "badge-pagado", pendiente: "badge-pendiente", cancelado: "badge-cancelado" };
+ 
+    body.innerHTML = data.map(p => {
+        const fecha = new Date(p.fecha_pedido).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" });
+        const hora  = new Date(p.fecha_pedido).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+        const badge = colorEstado[p.estado] || "badge-pendiente";
+ 
+        return `
+            <tr>
+                <td class="mono" style="color:var(--muted)">ORD-${String(p.id_pedido).padStart(6, "0")}</td>
+                <td style="font-size:.78rem;color:var(--muted)">${fecha}<br><span style="opacity:.5">${hora}</span></td>
+                <td style="font-weight:500">${p.cliente}</td>
+                <td style="font-size:.78rem;color:var(--muted)">${p.email}</td>
+                <td style="font-size:.78rem;color:var(--muted)">${p.metodo_pago}</td>
+                <td class="mono" style="color:var(--muted)">${p.cantidad_items}</td>
+                <td class="mono" style="color:var(--accent)">$${Number(p.total).toLocaleString("es-AR")}</td>
+                <td><span class="badge-status ${badge}">${p.estado}</span></td>
+                <td><button class="btn-detail" onclick="verDetalle(${p.id_pedido}, '${p.cliente.replace(/'/g, "\\'")}')">Ver</button></td>
+            </tr>`;
+    }).join("");
+}
+ 
+// Buscador de pedidos (por cliente, email o número de pedido)
+document.getElementById("search-pedidos").addEventListener("input", function () {
+    const filtro = this.value.toLowerCase();
+    pintarPedidos(todosLosPedidos.filter(p =>
+        p.cliente.toLowerCase().includes(filtro) ||
+        p.email.toLowerCase().includes(filtro) ||
+        String(p.id_pedido).includes(filtro)
+    ));
+});
+ 
+ 
+// =====================================================
+// 6. VENTAS POR CATEGORÍA
+// =====================================================
+ 
+function renderCategorias(data) {
+    const body = document.getElementById("body-categorias");
+ 
+    if (!Array.isArray(data) || !data.length) {
+        body.innerHTML = '<tr><td colspan="4" style="padding:1rem;text-align:center;color:var(--muted);">Sin datos.</td></tr>';
+        return;
+    }
+ 
+    const totalIngresos = data.reduce((acc, c) => acc + Number(c.ingresos), 0);
+ 
+    body.innerHTML = data.map(c => {
+        const porcentaje = totalIngresos > 0 ? ((Number(c.ingresos) / totalIngresos) * 100).toFixed(1) : 0;
+        return `
+            <tr>
+                <td style="font-weight:500;text-transform:capitalize">${c.categoria}</td>
+                <td class="mono">${c.unidades_vendidas}</td>
+                <td class="mono" style="color:var(--accent)">$${Number(c.ingresos).toLocaleString("es-AR")}</td>
+                <td>
+                    <div class="bar-wrap">
+                        <div class="bar-bg"><div class="bar-fill" style="width:${porcentaje}%"></div></div>
+                        <span class="mono" style="min-width:36px;font-size:.75rem;color:var(--muted)">${porcentaje}%</span>
+                    </div>
+                </td>
+            </tr>`;
+    }).join("");
+}
+ 
+ 
+// =====================================================
+// 7. STOCK BAJO
+// =====================================================
+ 
+function renderStock(data) {
+    const body = document.getElementById("body-stock");
+ 
+    if (!Array.isArray(data) || !data.length) {
+        body.innerHTML = '<tr><td colspan="3" style="padding:1rem;text-align:center;color:var(--accent);">✓ Todo el stock está OK</td></tr>';
+        return;
+    }
+ 
+    body.innerHTML = data.map(p => `
+        <tr>
+            <td><span class="stock-dot"></span>${p.nombre_producto}</td>
+            <td style="font-size:.78rem;color:var(--muted)">${p.categoria}</td>
+            <td class="mono" style="color:var(--red)">${p.stock}</td>
+        </tr>
+    `).join("");
+}
+ 
+ 
+// =====================================================
+// 8. MODAL — DETALLE DE UN PEDIDO
+// =====================================================
+ 
+async function verDetalle(id, cliente) {
+    // Mostrar título y spinner mientras carga
+    document.getElementById("modal-pedido-title").textContent = `ORD-${String(id).padStart(6, "0")} — ${cliente}`;
+    document.getElementById("modal-body").innerHTML = '<div class="loading"><div class="spinner"></div> Cargando...</div>';
+    document.getElementById("modal-detalle").classList.add("open");
+ 
+    try {
+        const headers = { "Authorization": `Bearer ${token}` };
+ 
+        // Traer los items del pedido y los datos generales (descuento, total) a la vez
+        const [resItems, resPedido] = await Promise.all([
+            fetch(`${API}/admin/pedidos/${id}`,       { headers }),
+            fetch(`${API}/pedidos/seguimiento/${id}`, { headers })
+        ]);
+ 
+        const items  = await resItems.json();
+        const pedido = resPedido.ok ? await resPedido.json() : {};
+ 
+        const totalBruto = items.reduce((acc, i) => acc + Number(i.subtotal), 0);
+        const descPct    = Number(pedido.descuento_pct   || 0);
+        const descMonto  = Number(pedido.descuento_monto || 0);
+        const totalFinal = pedido.total ? Number(pedido.total) : totalBruto - descMonto;
+ 
+        // Fila de descuento (solo si hay)
+        const filaDescuento = descPct > 0 ? `
+            <div style="display:flex;justify-content:space-between;padding:.5rem .8rem;border-top:1px dashed var(--border2);">
+                <span style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">Subtotal</span>
+                <span style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">$${totalBruto.toLocaleString("es-AR")}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:.4rem .8rem;">
+                <span style="font-family:var(--mono);font-size:.8rem;color:#ffaa00;">Descuento ${descPct}% OFF</span>
+                <span style="font-family:var(--mono);font-size:.8rem;color:#ffaa00;">−$${descMonto.toLocaleString("es-AR")}</span>
+            </div>` : "";
+ 
+        document.getElementById("modal-body").innerHTML = `
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;min-width:400px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;padding:.5rem .8rem;font-size:.72rem;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;">Producto</th>
+                            <th style="text-align:right;padding:.5rem .8rem;font-size:.72rem;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border);">Qty</th>
+                            <th style="text-align:right;padding:.5rem .8rem;font-size:.72rem;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border);">Precio</th>
+                            <th style="text-align:right;padding:.5rem .8rem;font-size:.72rem;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border);">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(i => `
+                            <tr>
+                                <td style="padding:.6rem .8rem;font-size:.83rem;border-bottom:1px solid var(--border)">${i.nombre_producto}</td>
+                                <td style="padding:.6rem .8rem;text-align:right;font-family:var(--mono);font-size:.8rem;border-bottom:1px solid var(--border);color:var(--muted)">${i.cantidad}</td>
+                                <td style="padding:.6rem .8rem;text-align:right;font-family:var(--mono);font-size:.8rem;border-bottom:1px solid var(--border);color:var(--muted)">$${Number(i.precio).toLocaleString("es-AR")}</td>
+                                <td style="padding:.6rem .8rem;text-align:right;font-family:var(--mono);font-size:.8rem;border-bottom:1px solid var(--border);color:var(--accent)">$${Number(i.subtotal).toLocaleString("es-AR")}</td>
+                            </tr>`).join("")}
+                    </tbody>
+                </table>
+            </div>
+            ${filaDescuento}
+            <div style="display:flex;justify-content:space-between;padding:.9rem .8rem 0;border-top:1px solid var(--border2);margin-top:.5rem;">
+                <span style="font-family:var(--mono);font-size:.82rem;color:var(--muted)">TOTAL${descPct > 0 ? " (con descuento)" : ""}</span>
+                <span style="font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--accent)">$${totalFinal.toLocaleString("es-AR")}</span>
+            </div>`;
+ 
+    } catch (e) {
+        document.getElementById("modal-body").innerHTML = '<p style="color:var(--red);">Error al cargar el detalle.</p>';
+    }
+}
+ 
+// Cerrar modal al hacer clic en X o en el fondo oscuro
+document.getElementById("modal-close").onclick = () =>
+    document.getElementById("modal-detalle").classList.remove("open");
+ 
+document.getElementById("modal-detalle").addEventListener("click", e => {
+    if (e.target === document.getElementById("modal-detalle"))
+        document.getElementById("modal-detalle").classList.remove("open");
+});
+ 
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+/* registro.css o login.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family:'Alan Sans', sans-serif;
+  background-color: #f2f2f2;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 5rem auto;
+  background-color: rgb(122, 122, 122);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+form input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.4rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+form input::placeholder {
+  color: #888;
+}
+
+
+form button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+form button:hover {
+  background-color: #000;
+}
+
+form p {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+form a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+
+
+  @import url('https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap');
+
+  header {
+    display: flex;
+    justify-content: center; /* centra horizontalmente */
+    align-items: center;     /* centra verticalmente si hace falta */
+    padding: 1rem 0;
+  }
+
+  
+  .container-logo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  
+  .container-logo i,
+  .container-logo h1 {
+    display: flex;
+    align-items: center;
+    font-size: 3rem;
+  }
+  
+
+  html, body {
+    height: 100%;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  #footer-container {
+    margin-top: auto;
+  }
+  
+  .input-password-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+    /* Resetear estilos heredados de "form" que causan el bug negro */
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+  .input-password-wrapper input {
+    width: 100%;
+    margin-bottom: 0 !important;
+    padding-right: 3rem !important;
+  }
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #888;
+    font-size: 16px;
+    line-height: 1;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Evitar que herede estilos del form button */
+    width: auto !important;
+    border-radius: 0 !important;
+    font-weight: normal !important;
+  }
+  .toggle-password:hover { color: #333; }
+  .toggle-password svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+  }

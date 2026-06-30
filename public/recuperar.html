@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Recuperar contraseña — RAZER</title>
+  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="container-logo">
+    <i class="fa-solid fa-computer"></i>
+    <h1 class="logo">RAZER</h1>
+  </div>
+</header>
+
+<section class="form-container">
+
+  <!-- PASO 1: pedir email y enviar código -->
+  <div id="paso-email">
+    <h2>Recuperar contraseña</h2>
+    <p style="font-size:.85rem;color:#eee;margin-bottom:1rem;">
+      Ingresá tu email y te enviamos un código de 6 dígitos.
+    </p>
+    <form id="form-email">
+      <input id="rec-email" type="email" placeholder="Correo electrónico" required>
+      <button type="submit">Enviar código</button>
+      <p id="error-email" style="color:red;font-size:.85rem;display:none;margin-top:.5rem;"></p>
+      <p><a href="login.html">← Volver a iniciar sesión</a></p>
+    </form>
+  </div>
+
+  <!-- PASO 2: ingresar código + nueva contraseña -->
+  <div id="paso-codigo" style="display:none;">
+    <h2>Ingresá el código</h2>
+    <p style="font-size:.85rem;color:#eee;margin-bottom:1rem;">
+      Revisá tu casilla de email — te enviamos un código de 6 dígitos. Si no lo ves, revisá la carpeta de spam.
+    </p>
+    <form id="form-codigo">
+      <input id="rec-codigo" type="text" placeholder="Código de 6 dígitos" maxlength="6" required>
+
+      <div class="input-password-wrapper">
+        <input id="rec-password" type="password" placeholder="Nueva contraseña" required>
+        <button type="button" class="toggle-password" data-target="rec-password">
+          <svg class="icon-eye-off">
+            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          <svg class="icon-eye" style="display:none;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="input-password-wrapper">
+        <input id="rec-confirm" type="password" placeholder="Confirmar nueva contraseña" required>
+        <button type="button" class="toggle-password" data-target="rec-confirm">
+          <svg class="icon-eye-off">
+            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          <svg class="icon-eye" style="display:none;">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+
+      <button type="submit">Cambiar contraseña</button>
+      <p id="error-codigo" style="color:red;font-size:.85rem;display:none;margin-top:.5rem;"></p>
+      <p><a href="#" id="reenviar-codigo">Reenviar código</a></p>
+    </form>
+  </div>
+
+</section>
+
+<div id="footer-container"></div>
+<script src="footer/footer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/92b8cfdb2b.js" crossorigin="anonymous"></script>
+
+<script>
+const API = "/api";
+let emailActual = "";
+
+// ── Toggle mostrar/ocultar contraseña ──
+document.querySelectorAll(".toggle-password").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input  = document.getElementById(btn.dataset.target);
+    const eyeOff = btn.querySelector(".icon-eye-off");
+    const eyeOn  = btn.querySelector(".icon-eye");
+    if (input.type === "password") {
+      input.type = "text";
+      eyeOff.style.display = "none";
+      eyeOn.style.display  = "block";
+    } else {
+      input.type = "password";
+      eyeOff.style.display = "block";
+      eyeOn.style.display  = "none";
+    }
+  });
+});
+
+// ── PASO 1: enviar email y pedir código ──
+document.getElementById("form-email").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email   = document.getElementById("rec-email").value.trim();
+  const errorEl = document.getElementById("error-email");
+  errorEl.style.display = "none";
+
+  try {
+    const res  = await fetch(`${API}/recuperar/solicitar-codigo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Error al solicitar el código");
+
+    emailActual = email;
+    document.getElementById("paso-email").style.display  = "none";
+    document.getElementById("paso-codigo").style.display  = "block";
+  } catch (err) {
+    errorEl.textContent   = err.message;
+    errorEl.style.display = "block";
+  }
+});
+
+// ── Reenviar código ──
+document.getElementById("reenviar-codigo").addEventListener("click", async (e) => {
+  e.preventDefault();
+  try {
+    await fetch(`${API}/recuperar/solicitar-codigo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailActual })
+    });
+    alert("Código reenviado a tu email 📧");
+  } catch {
+    alert("No se pudo reenviar el código");
+  }
+});
+
+// ── PASO 2: verificar código y cambiar contraseña ──
+document.getElementById("form-codigo").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const codigo   = document.getElementById("rec-codigo").value.trim();
+  const password = document.getElementById("rec-password").value;
+  const confirm  = document.getElementById("rec-confirm").value;
+  const errorEl  = document.getElementById("error-codigo");
+  errorEl.style.display = "none";
+
+  if (password !== confirm) {
+    errorEl.textContent   = "Las contraseñas no coinciden";
+    errorEl.style.display = "block";
+    return;
+  }
+  if (password.length < 6) {
+    errorEl.textContent   = "La contraseña debe tener al menos 6 caracteres";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  try {
+    const res  = await fetch(`${API}/recuperar/resetear-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailActual, codigo, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Error al cambiar la contraseña");
+
+    alert("¡Contraseña actualizada con éxito! Ya podés iniciar sesión.");
+    location.href = "login.html";
+  } catch (err) {
+    errorEl.textContent   = err.message;
+    errorEl.style.display = "block";
+  }
+});
+</script>
+
+</body>
+</html>

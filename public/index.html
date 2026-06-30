@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAZER</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+<div class="container hero">
+  <div class="container-logo">
+    <i class="fa-solid fa-computer"></i>
+    <h1 class="logo">RAZER</h1>
+  </div>
+  <div class="container-user">
+    <a href="login.html" id="user-link">
+      <i class="fa-solid fa-user"></i>
+    </a>
+    <div class="cart-icon">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span id="cart-count">0</span>
+    </div>
+  </div>
+</div>
+
+<div class="container-navbar">
+  <nav class="navbar container" style="position:relative;">
+    <i class="fa-solid fa-bars"></i>
+    <ul class="menu">
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="monitores.html">Monitores</a></li>
+      <li><a href="laptops.html">Laptops</a></li>
+      <li><a href="componentes.html">Componentes</a></li>
+    </ul>
+    <form class="search-form" onsubmit="return false;">
+      <input type="search" id="searchInput" placeholder="Buscar productos..." autocomplete="off"/>
+      <button class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <!-- Resultados del buscador universal -->
+    <div id="search-dropdown" style="
+        display:none;position:absolute;top:100%;left:0;right:0;z-index:9999;
+        background:#7a7a7a;border:1px solid #7a7a7a;border-radius:0 0 12px 12px;
+        max-height:420px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5);
+        min-width:340px;
+    "></div>
+  </nav>
+</div>
+</header>
+
+<!-- ── CARRUSEL ── -->
+<section class="banner">
+  <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="img/IMG-CARRUSEL.jpeg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="img/IMG-CARRUSEL2.jpeg" class="d-block w-100" alt="...">
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="main-content">
+
+<!-- ── FEATURES ── -->
+<section class="container container-features">
+  <div class="card-feature">
+    <i class="fa-solid fa-plane-up"></i>
+    <div class="feature-content">
+      <span>Envío gratuito a todo el país</span>
+      <p>En pedidos superiores a $150.000</p>
+    </div>
+  </div>
+  <div class="card-feature">
+    <i class="fa-solid fa-wallet"></i>
+    <div class="feature-content">
+      <span>Reembolso</span>
+      <p>100% de devolución de dinero</p>
+    </div>
+  </div>
+  <div class="card-feature">
+    <i class="fa-solid fa-headset"></i>
+    <div class="feature-content">
+      <span>Servicio al cliente 24/7</span>
+      <p>Llámenos al 3863437468</p>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ── MEJORES PRODUCTOS (cargados desde la BD) ── -->
+<section class="container top-products">
+  <div class="container-h1">
+    <h1>Mejores Productos</h1>
+  </div>
+  <div class="container-products" id="productos-container">
+    <p style="text-align:center;color:#aaa;grid-column:1/-1;">Cargando productos...</p>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ── BLOGS ── -->
+<section class="container blogs">
+<div class="container-blogs">
+  <div class="card-blog">
+    <div class="container-img"><img src="img/IMG-5.png" alt="Monitor"/></div>
+    <div class="content-blog">
+      <h3>¿QUÉ ES UN MONITOR?</h3>
+      <p>Los monitores gamer están diseñados para ofrecer una experiencia fluida y envolvente con altas tasas de refresco (144Hz–240Hz), bajo tiempo de respuesta (1ms) y tecnologías G-Sync o FreeSync.</p>
+    </div>
+  </div>
+  <div class="card-blog">
+    <div class="container-img"><img src="img/IMG-4.png" alt="Laptop"/></div>
+    <div class="content-blog">
+      <h3>¿QUÉ ES UNA LAPTOP?</h3>
+      <p>Las laptops combinan rendimiento y movilidad. Existen modelos livianos para tareas cotidianas y otros potentes para gaming, diseño gráfico, programación o edición multimedia.</p>
+    </div>
+  </div>
+  <div class="card-blog">
+    <div class="container-img"><img src="img/IMG-6.png" alt="Placa de video"/></div>
+    <div class="content-blog">
+      <h3>¿QUÉ ES UNA PLACA DE VIDEO?</h3>
+      <p>Las placas de video procesan y mejoran los gráficos. Son fundamentales para juegos, edición de video y tareas 3D. Marcas como NVIDIA y AMD lideran el mercado.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+</main>
+
+
+
+
+<!-- ── PANEL CARRITO ── -->
+<div id="cart-panel" class="cart-panel">
+  <div class="cart-header">
+    <h2>Tu carrito</h2>
+    <span id="close-cart">✖</span>
+  </div>
+  <div id="cart-items" class="cart-items"></div>
+  <div class="cart-footer">
+    <h3>Total: <span id="cart-total">$0</span></h3>
+    <button id="buy-cart">Comprar</button>
+    <button id="clear-cart">Vaciar carrito</button>
+  </div>
+</div>
+
+<!-- ── SCRIPTS ── -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/92b8cfdb2b.js" crossorigin="anonymous"></script>
+<script src="carrito-frontend.js"></script>
+
+<script>
+// Menú hamburguesa
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".fa-bars").addEventListener("click", () => {
+    document.querySelector(".menu").classList.toggle("active");
+  });
+});
+
+// ── BUSCADOR UNIVERSAL ───────────────────────────────────────
+const searchInput    = document.getElementById("searchInput");
+const searchDropdown = document.getElementById("search-dropdown");
+let   todosLosProductos = [];
+let   searchTimer = null;
+
+// Mapeo de imágenes por id_producto (igual que en las otras páginas)
+const IMAGENES = {
+  1:  "img/componentes/Memoria Ram Ddr3 8gb 1600mhz Chip Hynix - Micron Escritorio (2).png",
+  2:  "img/componentes/Memoria Ram Patriot Viper Elite Rgb 16gb Ddr5 6000mhz Cl30 (2).png",
+  3:  "img/componentes/Tarjeta De Video Asus Rog Astral Rtx 5090 32gb Gddr7 Oc (2).png",
+  4:  "img/componentes/Placa De Video Geforce Rtx 5060 8gb Msi Ventus 2x Oc White (2).png",
+  5:  "img/componentes/Mouse gamer de juego Redragon Griffin M607 negro (2).png",
+  6:  "img/componentes/Teclado Gamer Redragon Eisa Pro Se Wireless K686ak (2).png",
+  7:  "img/componentes/Placa De Video Geforce Rtx 5050 8gb Msi Shadow 2x Oc.png",
+  8:  "img/componentes/Gabinete Gamer Level Up Argos Atx Vidrio Templado Argb Color Negro (2).png",
+  9:  "img/componentes/Gabinete Gamer Xigmatek Aqua Nano Ii Arctic M-atx 7 X Fan Negro (2).png",
+  10: "img/laptops/Notebook Hp Gaming Victus 15.png",
+  11: "img/laptops/Lenovo ThinkPad E16 Gen 2 R5.png",
+  12: "img/laptops/Notebook Asus Vivobook M1502ya-bq580 Ryzen 7 5825u 16gb De Ram Ddr4 512gb Ssd M.2 Nvme Pcie, Amd Radeon Graphics (15,6) Full Hd 1920 X 1080 Ips Wi-fi 6e (802.11ax) Windows 11 Home, Color Cool S.png",
+  13: "img/laptops/Notebook Asus Vivobook X1404va-i512256 Intel Core I5 1334u 12gb Ram 256gb Ssd M.2 14 Fhd Ips Teclado Ingles W11 Liviana Color Quiet Blue Hf (2).png",
+  14: "img/laptops/Notebook Ryzen 5 3500u 16gb Ram 256gb Ssd 15.6 Gen2 Ryer Gris (2).png",
+  15: "img/laptops/Notebook Lenovo Ideapad 1 14IJL7 Procesador Intel Celeron N4500 4gb Ram Ddr4 128gb SSD Pantalla 14 HD Windows 11 S Color Gris.png",
+  16: "img/laptops/Notebook HP 15-fd2350la Intel Core Ultra 5 8GB RAM 512GB SSD 15,6 FHD Windows 11 Home (2).png",
+  17: "img/laptops/Notebook HP 255 G10 Ryzen 7.png",
+  18: "img/laptops/Notebook Hp 255 G10 Amd Ryzen 7 7730u 32gb Ssd 512gb Gris Oscuro (2).png",
+  19: "img/monitores/Monitor Arkham 25 Gamer 210hz Ips Fhd 1ms Hdmi Gris 2 (2).png",
+  20: "img/monitores/Monitor Gamer 24 Asus Tuf Gaming Full Hd 180hz 1ms Vg249ql3a Color Negro (2).png",
+  21: "img/monitores/Monitor Gamer 34 Curvo Altura Regulable 1440p 165hz G-sync Negro (2).png",
+  22: "img/monitores/Monitor Gamer Msi Mag 255f E20 25 Pulgadas Full Hd 200hz Color Negro (2).png",
+  23: "img/monitores/Monitor Gamer Viewsonic 24 Vx2429 Fhd 200hz Color Negro (2).png",
+  24: "img/monitores/Monitor Gamer XPG 24 Full HD 120Hz.png",
+  25: "img/monitores/Monitor Samsung 22 Essential S3 Flat 120 Hz Fhd 1920x1080 Color Negro (2).png",
+  26: "img/monitores/Monitor Samsung 24\' Odyssey G3 FHD 144Hz G30B (2).png",
+  27: "img/monitores/Monitor Xiaomi A27qi.png"
+};
+
+const SECCION_LINK = { 1: "monitores.html", 2: "laptops.html", 3: "componentes.html" };
+const SECCION_NOMBRE = { 1: "Monitores", 2: "Laptops", 3: "Componentes" };
+const SECCION_COLOR  = { 1: "#4d9fff", 2: "#00cc88", 3: "#ff9944" };
+
+// Cargar todos los productos al iniciar (en segundo plano)
+fetch("/api/productos")
+  .then(r => r.json())
+  .then(data => { todosLosProductos = data; })
+  .catch(() => {});
+
+// Cerrar dropdown al hacer click fuera
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-form")) cerrarDropdown();
+});
+
+searchInput.addEventListener("focus", () => {
+  if (searchInput.value.trim().length >= 1) buscarProductos(searchInput.value.trim());
+});
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  const q = searchInput.value.trim();
+  if (!q) { cerrarDropdown(); restaurarProductosDestacados(); return; }
+  searchTimer = setTimeout(() => buscarProductos(q), 180);
+});
+
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Escape") { cerrarDropdown(); searchInput.blur(); }
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const q = searchInput.value.trim();
+    if (q) {
+      mostrarResultadosEnPagina(q);
+    } else {
+      restaurarProductosDestacados();
+    }
+    cerrarDropdown();
+  }
+});
+
+// Restaura el título y los productos destacados originales
+function restaurarProductosDestacados() {
+  const titulo = document.querySelector(".container-h1 h1");
+  if (titulo) titulo.textContent = "Mejores Productos";
+  const container = document.getElementById("productos-container");
+  container.innerHTML = '<p style="text-align:center;color:#aaa;grid-column:1/-1;">Cargando productos...</p>';
+  fetch("/api/productos/destacados")
+    .then(r => r.json())
+    .then(productos => {
+      container.innerHTML = "";
+      productos.forEach(p => container.appendChild(crearCard(p)));
+    })
+    .catch(() => {
+      container.innerHTML = '<p style="text-align:center;color:#c00;grid-column:1/-1;">No se pudo conectar al servidor.</p>';
+    });
+}
+
+function buscarProductos(q) {
+  const filtro = q.toLowerCase();
+  const encontrados = todosLosProductos.filter(p =>
+    p.nombre_producto.toLowerCase().includes(filtro) ||
+    (p.descripcion && p.descripcion.toLowerCase().includes(filtro)) ||
+    (p.categoria && p.categoria.toLowerCase().includes(filtro))
+  ).slice(0, 8); // máximo 8 en el dropdown
+
+  if (!encontrados.length) {
+    searchDropdown.innerHTML = `
+      <div style="padding:1.2rem;text-align:center;color:#666;font-size:.85rem;">
+        Sin resultados para "<b>${q}</b>"
+      </div>`;
+    searchDropdown.style.display = "block";
+    return;
+  }
+
+  const html = encontrados.map(p => {
+    const img  = IMAGENES[p.id_producto] || "img/placeholder.png";
+    const link = SECCION_LINK[p.id_categoria] || "index.html";
+    const cat  = SECCION_NOMBRE[p.id_categoria] || "";
+    const col  = SECCION_COLOR[p.id_categoria] || "#888";
+    return `
+    <a href="${link}" onclick="localStorage.setItem('buscar_en_pagina','${p.nombre_producto.replace(/'/g,"\'")}'); return true;"
+       style="display:flex;align-items:center;gap:.9rem;padding:.7rem 1rem;
+              text-decoration:none;color:inherit;border-bottom:1px solid #1e1e1e;
+              transition:background .15s;"
+       onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background=''">
+      <img src="${img}" alt="${p.nombre_producto}"
+           style="width:44px;height:44px;object-fit:contain;border-radius:6px;background:#1a1a1a;flex-shrink:0;"
+           onerror="this.src='img/placeholder.png'">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.83rem;font-weight:600;color:#e8e8e8;
+                    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          ${p.nombre_producto}
+        </div>
+        <div style="font-size:.72rem;color:#888;margin-top:.1rem;">
+          <span style="color:${col};font-weight:600;">${cat}</span>
+          · $${Number(p.precio).toLocaleString("es-AR")}
+        </div>
+      </div>
+      <i class="fa-solid fa-arrow-right" style="color:#444;font-size:.75rem;flex-shrink:0;"></i>
+    </a>`;
+  }).join("");
+
+  // Si hay más resultados, agregar botón "Ver todos"
+  const total = todosLosProductos.filter(p =>
+    p.nombre_producto.toLowerCase().includes(filtro) ||
+    (p.descripcion && p.descripcion.toLowerCase().includes(filtro))
+  ).length;
+
+  const verTodos = total > 8 ? `
+    <div style="padding:.7rem 1rem;text-align:center;">
+      <button onclick="mostrarResultadosEnPagina('${q}'); cerrarDropdown();"
+              style="background:none;border:1px solid #2a2a2a;border-radius:8px;
+                     color:#888;padding:.4rem 1.2rem;cursor:pointer;font-size:.8rem;
+                     width:100%;transition:all .2s;"
+              onmouseover="this.style.borderColor='#00ff88';this.style.color='#00ff88'"
+              onmouseout="this.style.borderColor='#2a2a2a';this.style.color='#888'">
+        Ver los ${total} resultados en la página
+      </button>
+    </div>` : "";
+
+  searchDropdown.innerHTML = html + verTodos;
+  searchDropdown.style.display = "block";
+}
+
+function cerrarDropdown() {
+  searchDropdown.style.display = "none";
+}
+
+// Mostrar resultados en la sección de productos del index
+function mostrarResultadosEnPagina(q) {
+  const filtro = q.toLowerCase();
+  const encontrados = todosLosProductos.filter(p =>
+    p.nombre_producto.toLowerCase().includes(filtro) ||
+    (p.descripcion && p.descripcion.toLowerCase().includes(filtro)) ||
+    (p.categoria && p.categoria.toLowerCase().includes(filtro))
+  );
+  const container = document.getElementById("productos-container");
+  const titulo    = document.querySelector(".container-h1 h1");
+  if (titulo) titulo.textContent = `Resultados para "${q}" (${encontrados.length})`;
+
+  if (!encontrados.length) {
+    container.innerHTML = `<p style="text-align:center;color:#aaa;grid-column:1/-1;padding:2rem;">
+      No se encontraron productos para "<b>${q}</b>".</p>`;
+    container.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  container.innerHTML = "";
+  encontrados.forEach(p => {
+    const img = IMAGENES[p.id_producto] || p.imagen || "img/placeholder.png";
+    container.appendChild(crearCardConImagen(p, img));
+  });
+  container.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function crearCardConImagen(p, img) {
+  const div = document.createElement("div");
+  div.className = "card-product";
+  const cat = SECCION_NOMBRE[p.id_categoria] || p.categoria || "";
+  const specs = (p.descripcion || "Sin descripción")
+    .split("|")
+    .map(s => `<li>${s.trim()}</li>`)
+    .join("");
+  div.innerHTML = `
+    <div class="container-img">
+      <img src="${img}" alt="${p.nombre_producto}" onerror="this.src='img/placeholder.png'"/>
+    </div>
+    <div class="content-card-product">
+      <h3>${p.nombre_producto}</h3>
+      <span class="add-cart"
+        data-id="${p.id_producto}"
+        data-name="${p.nombre_producto}"
+        data-price="${p.precio}"
+        data-section="${cat}">
+        <i class="fa-solid fa-basket-shopping"></i>
+      </span>
+      <p class="price">$${Number(p.precio).toLocaleString("es-AR")}</p>
+      <button class="btn-read-more">Leer más</button>
+      <ul class="more-info">
+        ${specs}
+        <li>Stock disponible: ${p.stock} unidades</li>
+      </ul>
+    </div>`;
+  return div;
+}
+
+// Leer más / menos
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".btn-read-more");
+  if (!btn) return;
+  const card = btn.closest(".card-product");
+  const expanded = card.classList.contains("expanded");
+  document.querySelectorAll(".card-product").forEach(p => {
+    p.classList.remove("expanded");
+    const b = p.querySelector(".btn-read-more");
+    if (b) b.textContent = "Leer más";
+  });
+  if (!expanded) { card.classList.add("expanded"); btn.textContent = "Leer menos"; }
+});
+
+// Cargar productos destacados desde la API (primeros 3 de cada categoría)
+document.addEventListener("DOMContentLoaded", async () => {
+  const container = document.getElementById("productos-container");
+  try {
+    const res = await fetch("/api/productos/destacados");
+    const productos = await res.json();
+    container.innerHTML = "";
+    productos.forEach(p => container.appendChild(crearCard(p)));
+  } catch (e) {
+    container.innerHTML = '<p style="text-align:center;color:#c00;grid-column:1/-1;">No se pudo conectar al servidor. Intentá nuevamente más tarde.</p>';
+  }
+});
+
+function crearCard(p) {
+  const div = document.createElement("div");
+  div.className = "card-product";
+  const specs = (p.descripcion || "Sin descripción")
+    .split("|")
+    .map(s => `<li>${s.trim()}</li>`)
+    .join("");
+  div.innerHTML = `
+    <div class="container-img"><img src="${p.imagen}" alt="${p.nombre_producto}" onerror="this.src='img/placeholder.png'"/></div>
+    <div class="content-card-product">
+      <h3>${p.nombre_producto}</h3>
+      <span class="add-cart"
+        data-id="${p.id_producto}"
+        data-name="${p.nombre_producto}"
+        data-price="${p.precio}"
+        data-section="${p.categoria}">
+        <i class="fa-solid fa-basket-shopping"></i>
+      </span>
+      <p class="price">$${Number(p.precio).toLocaleString("es-AR")}</p>
+      <button class="btn-read-more">Leer más</button>
+      <ul class="more-info">
+        ${specs}
+        <li>Stock disponible: ${p.stock} unidades</li>
+      </ul>
+    </div>`;
+  return div;
+}
+</script>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <a href="https://mail.google.com/mail/?view=cm&to=victoragustindelgado.22231@gmail.com" target="_blank">
+      Email: RAZER@support.com
+    </a>
+      
+      <p>
+        <i class="fa-solid fa-computer"></i> &copy; 2025 RAZER
+      </p>
+    
+  </div>
+</footer>
+
+</body>
+</html>

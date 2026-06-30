@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Pedidos — RAZER</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mis-pedidos.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+<body>
+
+  <!-- HEADER SIMPLE -->
+  <header>
+    <div class="container hero">
+      <div class="container-logo">
+        <i class="fa-solid fa-computer"></i>
+        <h1 class="logo">RAZER</h1>
+      </div>
+      <div class="container-user">
+        <a href="index.html" class="btn-back">← Volver a la Tienda</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content container">
+    <div class="page-header">
+      <h1>Mis Pedidos</h1>
+      <p>Consulta el historial y estado de tus compras</p>
+    </div>
+
+    <!-- MENSAJE SI NO HAY SESIÓN -->
+    <div id="no-login" class="alert-box" style="display:none;">
+      <p>Debes iniciar sesión para ver tus pedidos.</p>
+      <a href="login.html" class="btn-primary">Iniciar Sesión ahora</a>
+    </div>
+
+    <!-- CARGANDO -->
+    <div id="loading" class="text-center" style="margin: 40px 0;">
+      <p style="font-size: 1.2rem; color: #777;">Cargando tus pedidos...</p>
+    </div>
+
+    <!-- LISTA DE PEDIDOS -->
+    <div id="lista-pedidos" class="orders-list"></div>
+  </main>
+  
+ 
+  <script src="https://kit.fontawesome.com/92b8cfdb2b.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    const API = "/api";
+    const USER_KEY = "razer_user";
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
+      const loading = document.getElementById("loading");
+      const noLogin = document.getElementById("no-login");
+
+      if (!user) {
+        loading.style.display = "none";
+        noLogin.style.display = "block";
+        return;
+      }
+
+      try {
+        const r = await fetch(`${API}/pedidos/historial/${user.id}`);
+        const pedidos = await r.json();
+        loading.style.display = "none";
+        renderPedidos(pedidos);
+      } catch (err) {
+        loading.innerHTML = "<p>Error al conectar con el servidor. Verifica que la API esté activa.</p>";
+      }
+    });
+
+    function renderPedidos(pedidos) {
+      const container = document.getElementById("lista-pedidos");
+      
+      if (!pedidos || pedidos.length === 0) {
+        container.innerHTML = "<div class='text-center'><p>No tienes pedidos registrados todavía.</p></div>";
+        return;
+      }
+
+      container.innerHTML = pedidos.map(p => `
+        <div class="order-card">
+          <div class="order-header" onclick="toggleDetalle(${p.id_pedido})">
+            <div class="order-info">
+              <strong>ORDEN #${String(p.id_pedido).padStart(5, '0')}</strong>
+              <span>Fecha: ${new Date(p.fecha_pedido).toLocaleDateString()}</span>
+            </div>
+            <div class="order-status ${p.estado}">
+              ${p.estado}
+            </div>
+            <div class="order-price">
+              $${Number(p.total).toLocaleString()}
+            </div>
+          </div>
+          <div id="detalle-${p.id_pedido}" class="order-detail">
+            <div class="loading-detail">Cargando detalles del pedido...</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function toggleDetalle(id) {
+      const el = document.getElementById(`detalle-${id}`);
+      
+      // Si el que clickeamos ya está abierto, lo cerramos y listo
+      if (el.classList.contains("open")) {
+        el.classList.remove("open");
+        return;
+      }
+
+      // Cerramos todos los demás detalles abiertos antes de abrir el nuevo
+      document.querySelectorAll('.order-detail').forEach(detail => {
+        detail.classList.remove("open");
+      });
+      
+      el.classList.add("open");
+      try {
+        const r = await fetch(`${API}/pedidos/detalle/${id}`);
+        const items = await r.json();
+        
+        if (!items || items.length === 0) {
+          el.innerHTML = "<p>No se encontraron productos para este pedido.</p>";
+          return;
+        }
+
+        // Calculamos totales para la lógica de descuento
+        let subtotalSinDescuento = 0;
+        let cantidadTotalProductos = 0;
+        
+        items.forEach(i => {
+          subtotalSinDescuento += Number(i.precio) * Number(i.cantidad);
+          cantidadTotalProductos += Number(i.cantidad);
+        });
+
+        const aplicaDescuento = cantidadTotalProductos >= 3;
+        const montoDescuento = aplicaDescuento ? (subtotalSinDescuento * 0.10) : 0;
+        const totalFinal = subtotalSinDescuento - montoDescuento;
+
+        el.innerHTML = `
+          <table class="detail-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cant.</th>
+                <th>Precio Unit.</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map(i => `
+                <tr>
+                  <td style="font-weight: 600;">${i.nombre_producto}</td>
+                  <td style="text-align: center;">${i.cantidad}</td>
+                  <td>$${Number(i.precio).toLocaleString()}</td>
+                  <td style="font-weight: 600;">$${(Number(i.precio) * Number(i.cantidad)).toLocaleString()}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+
+          <div class="order-summary" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed #ddd; text-align: right;">
+            <div style="margin-bottom: 8px; color: #777;">
+              Subtotal: <strong>$${subtotalSinDescuento.toLocaleString()}</strong>
+            </div>
+            
+            ${aplicaDescuento ? `
+              <div style="margin-bottom: 8px; color: #28a745; font-weight: bold;">
+                Descuento Especial (10% por 3+ productos): -$${montoDescuento.toLocaleString()}
+              </div>
+            ` : `
+              <div style="margin-bottom: 8px; color: #999; font-size: 0.85rem;">
+                * No aplica descuento (mínimo 3 productos)
+              </div>
+            `}
+
+            <div style="font-size: 1.4rem; font-weight: 800; color: #151515; margin-top: 10px;">
+              Total Pagado: $${totalFinal.toLocaleString()}
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        el.innerHTML = "<p>Error al cargar el detalle de los productos.</p>";
+      }
+    }
+  </script>
+</body>
+</html>

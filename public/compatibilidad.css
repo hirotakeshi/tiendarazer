@@ -1,0 +1,177 @@
+/* ============================================
+   COMPATIBILIDAD CSS — estilo consistente con el sitio
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Alan Sans', sans-serif;
+}
+
+/* HERO */
+.compat-hero {
+    background: #929191;
+    color: white;
+    padding: 50px 20px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.compat-hero h1 {
+    font-size: clamp(1.6rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.compat-hero p {
+    font-size: 1rem;
+    opacity: 0.85;
+}
+
+/* SECCIONES */
+.compat-section {
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #151515;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #7a7a7a;
+}
+
+/* GRID DE TARJETAS */
+.compat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* TARJETA */
+.compat-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.compat-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.compat-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #151515;
+    margin-bottom: 4px;
+}
+
+.compat-card .price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #7a7a7a;
+    margin-bottom: 14px;
+}
+
+/* HEADER TARJETA CON BADGE */
+.card-header-tech {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.tech-tag {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tech-tag.high    { background: #ffd700; color: #000; }
+.tech-tag.mid     { background: #7a7a7a; color: #fff; }
+.tech-tag.low     { background: #e0e0e0; color: #555; }
+.tech-tag.modern  { background: #00aa55; color: #fff; }
+.tech-tag.legacy  { background: #dc3545; color: #fff; }
+
+/* INFO ITEMS */
+.compat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-item {
+    padding: 10px 12px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    border-left: 3px solid #e0e0e0;
+}
+
+.info-item.req-critical { border-left-color: #dc3545; background: #fff5f5; }
+.info-item.req-warning  { border-left-color: #ffc107; background: #fffdf0; }
+.info-item.req-safe     { border-left-color: #00aa55; background: #f0fff5; }
+
+.info-item .label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #7a7a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 3px;
+}
+
+.info-item .value {
+    font-size: 0.9rem;
+    color: #151515;
+    font-weight: 500;
+}
+
+.section-subtitle {
+    color: #888;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .compat-hero { padding: 30px 15px; margin-bottom: 25px; }
+    .section-title { font-size: 1.2rem; }
+    .compat-cards { grid-template-columns: 1fr; gap: 14px; }
+    .compat-card { padding: 15px; }
+    .compat-section { margin-bottom: 35px; }
+}
+
+@media (max-width: 480px) {
+    .compat-hero h1 { font-size: 1.4rem; }
+    .compat-hero p  { font-size: 0.9rem; }
+    .section-title  { font-size: 1.1rem; }
+    .info-item .value { font-size: 0.85rem; }
+}
+
+/* BOTÓN VOLVER */
+.btn-back {
+    text-decoration: none;
+    color: #7a7a7a;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: color 0.2s;
+}
+
+.btn-back:hover { color: #151515; }
+
+  
