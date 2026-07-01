@@ -1,4 +1,4 @@
-const API       = "http://localhost:3000/api";
+const API       = "/api";
 const CART_KEY  = "cart_global";
 const USER_KEY  = "razer_user";
 const TOKEN_KEY = "razer_token";
