@@ -446,18 +446,20 @@ function crearCard(p) {
 </script>
 
 <!-- FOOTER -->
-<footer class="footer">
+const footerEl = document.getElementById("footer-container");
+if (footerEl) {
+    footerEl.innerHTML = `
+ <footer class="footer">
   <div class="footer-content">
-    <a href="https://mail.google.com/mail/?view=cm&to=victoragustindelgado.22231@gmail.com" target="_blank">
+    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=victoragustindelgado.22231@gmail.com&su=Consulta%20desde%20RAZER" target="_blank" rel="noopener">
       Email: RAZER@support.com
     </a>
-      
       <p>
         <i class="fa-solid fa-computer"></i> &copy; 2025 RAZER
       </p>
-    
   </div>
-</footer>
+</footer>`;
+}
 
 </body>
 </html>
