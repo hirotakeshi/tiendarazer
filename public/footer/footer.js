@@ -1,10 +1,11 @@
 // footer/footer.js — Footer compartido para todas las páginas
+// footer/footer.js — Footer compartido para todas las páginas
 const footerEl = document.getElementById("footer-container");
 if (footerEl) {
     footerEl.innerHTML = `
  <footer class="footer">
   <div class="footer-content">
-    <a href="mailto:victoragustindelgado.22231@gmail.com?subject=Consulta%20desde%20RAZER">
+    <a href="mailto:victoragustindelgado.22231@gmail.com">
       Email: RAZER@support.com
     </a>
       <p>
