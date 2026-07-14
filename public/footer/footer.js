@@ -1,5 +1,4 @@
 // footer/footer.js — Footer compartido para todas las páginas
-// footer/footer.js — Footer compartido para todas las páginas
 const footerEl = document.getElementById("footer-container");
 if (footerEl) {
     footerEl.innerHTML = `
