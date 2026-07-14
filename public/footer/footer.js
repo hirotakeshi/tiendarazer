@@ -4,7 +4,7 @@ if (footerEl) {
     footerEl.innerHTML = `
  <footer class="footer">
   <div class="footer-content">
-    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=victoragustindelgado.22231@gmail.com" target="_blank" rel="noopener">
+    <a href="mailto:victoragustindelgado.22231@gmail.com?subject=Consulta%20desde%20RAZER">
       Email: RAZER@support.com
     </a>
       <p>
