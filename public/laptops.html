@@ -97,19 +97,6 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// Mapeo manual de imágenes por id_producto
-const imagenesLaptops = {
-  10: "img/laptops/Notebook Hp Gaming Victus 15.png",
-  11: "img/laptops/Lenovo ThinkPad E16 Gen 2 R5.png",
-  12: "img/laptops/Notebook Asus Vivobook M1502ya-bq580 Ryzen 7 5825u 16gb De Ram Ddr4 512gb Ssd M.2 Nvme Pcie, Amd Radeon Graphics (15,6) Full Hd 1920 X 1080 Ips Wi-fi 6e (802.11ax) Windows 11 Home, Color Cool S.png",
-  13: "img/laptops/Notebook Asus Vivobook X1404va-i512256 Intel Core I5 1334u 12gb Ram 256gb Ssd M.2 14 Fhd Ips Teclado Ingles W11 Liviana Color Quiet Blue Hf (2).png",
-  14: "img/laptops/Notebook Ryzen 5 3500u 16gb Ram 256gb Ssd 15.6 Gen2 Ryer Gris (2).png",
-  15: "img/laptops/Notebook Lenovo Ideapad 1 14IJL7 Procesador Intel Celeron N4500 4gb Ram Ddr4 128gb SSD Pantalla 14 HD Windows 11 S Color Gris.png",
-  16: "img/laptops/Notebook HP 15-fd2350la Intel Core Ultra 5 8GB RAM 512GB SSD 15,6 FHD Windows 11 Home (2).png",
-  17: "img/laptops/Notebook HP 255 G10 Ryzen 7.png",
-  18: "img/laptops/Notebook Hp 255 G10 Amd Ryzen 7 7730u 32gb Ssd 512gb Gris Oscuro (2).png"
-};
-
 // Cargar productos desde la API
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("productos-container");
@@ -131,12 +118,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     productosLocales = laptops;
 
     laptops.forEach(producto => {
-      const img = imagenesLaptops[producto.id_producto] || "img/placeholder.png";
+      const img = producto.imagen || "img/placeholder.png";
       const card = document.createElement("div");
       card.classList.add("card-product");
       card.innerHTML = `
         <div class="container-img">
-          <img src="${img}" alt="${producto.nombre_producto}" />
+          <img src="${img}" alt="${producto.nombre_producto}" onerror="this.src='img/placeholder.png'" />
         </div>
         <div class="content-card-product">
 
