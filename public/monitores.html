@@ -96,19 +96,6 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// Mapeo manual de imágenes por id_producto
-const imagenesMonitores = {
-  19: "img/monitores/Monitor Arkham 25 Gamer 210hz Ips Fhd 1ms Hdmi Gris 2 (2).png",
-  20: "img/monitores/Monitor Gamer 24 Asus Tuf Gaming Full Hd 180hz 1ms Vg249ql3a Color Negro (2).png",
-  21: "img/monitores/Monitor Gamer 34 Curvo Altura Regulable 1440p 165hz G-sync Negro (2).png",
-  22: "img/monitores/Monitor Gamer Msi Mag 255f E20 25 Pulgadas Full Hd 200hz Color Negro (2).png",
-  23: "img/monitores/Monitor Gamer Viewsonic 24 Vx2429 Fhd 200hz Color Negro (2).png",
-  24: "img/monitores/Monitor Gamer XPG 24 Full HD 120Hz.png",
-  25: "img/monitores/Monitor Samsung 22 Essential S3 Flat 120 Hz Fhd 1920x1080 Color Negro (2).png",
-  26: "img/monitores/Monitor Samsung 24' Odyssey G3 FHD 144Hz G30B (2).png",
-  27: "img/monitores/Monitor Xiaomi A27qi.png"
-};
-
 // Cargar productos desde la API
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("productos-container");
@@ -130,12 +117,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     productosLocales = monitores;
 
     monitores.forEach(producto => {
-      const img = imagenesMonitores[producto.id_producto] || "img/placeholder.png";
+      const img = producto.imagen || "img/placeholder.png";
       const card = document.createElement("div");
       card.classList.add("card-product");
       card.innerHTML = `
         <div class="container-img">
-          <img src="${img}" alt="${producto.nombre_producto}" />
+          <img src="${img}" alt="${producto.nombre_producto}" onerror="this.src='img/placeholder.png'" />
         </div>
         <div class="content-card-product">
 
