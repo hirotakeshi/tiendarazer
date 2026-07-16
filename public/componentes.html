@@ -95,19 +95,6 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// Mapeo manual de imágenes por id_producto
-const imagenesComponentes = {
-  1:  "img/componentes/Memoria Ram Ddr3 8gb 1600mhz Chip Hynix - Micron Escritorio (2).png",
-  2:  "img/componentes/Memoria Ram Patriot Viper Elite Rgb 16gb Ddr5 6000mhz Cl30 (2).png",
-  3:  "img/componentes/Tarjeta De Video Asus Rog Astral Rtx 5090 32gb Gddr7 Oc (2).png",
-  4:  "img/componentes/Placa De Video Geforce Rtx 5060 8gb Msi Ventus 2x Oc White (2).png",
-  5:  "img/componentes/Mouse gamer de juego Redragon Griffin M607 negro (2).png",
-  6:  "img/componentes/Teclado Gamer Redragon Eisa Pro Se Wireless K686ak (2).png",
-  7:  "img/componentes/Placa De Video Geforce Rtx 5050 8gb Msi Shadow 2x Oc.png",
-  8:  "img/componentes/Gabinete Gamer Level Up Argos Atx Vidrio Templado Argb Color Negro (2).png",
-  9:  "img/componentes/Gabinete Gamer Xigmatek Aqua Nano Ii Arctic M-atx 7 X Fan Negro (2).png"
-};
-
 // Cargar productos desde la API
 document.addEventListener("DOMContentLoaded", async () => {
   const container = document.getElementById("productos-container");
@@ -128,12 +115,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     container.innerHTML = "";
 
     componentes.forEach(producto => {
-      const img = imagenesComponentes[producto.id_producto] || "img/placeholder.png";
+      const img = producto.imagen || "img/placeholder.png";
       const card = document.createElement("div");
       card.classList.add("card-product");
       card.innerHTML = `
         <div class="container-img">
-          <img src="${img}" alt="${producto.nombre_producto}" />
+          <img src="${img}" alt="${producto.nombre_producto}" onerror="this.src='img/placeholder.png'" />
         </div>
         <div class="content-card-product">
 
