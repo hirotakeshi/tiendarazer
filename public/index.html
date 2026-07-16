@@ -51,6 +51,7 @@
 </div>
 </header>
 
+
 <!-- ── CARRUSEL ── -->
 <section class="banner">
   <div class="container banner-container">
@@ -152,7 +153,7 @@
     <button id="buy-cart">Comprar</button>
     <button id="clear-cart">Vaciar carrito</button>
   </div>
-</div>  
+</div>
 <div id="footer-container"></div>
 
 <!-- ── SCRIPTS ── -->
@@ -174,37 +175,6 @@ const searchInput    = document.getElementById("searchInput");
 const searchDropdown = document.getElementById("search-dropdown");
 let   todosLosProductos = [];
 let   searchTimer = null;
-
-// Mapeo de imágenes por id_producto (igual que en las otras páginas)
-const IMAGENES = {
-  1:  "img/componentes/Memoria Ram Ddr3 8gb 1600mhz Chip Hynix - Micron Escritorio (2).png",
-  2:  "img/componentes/Memoria Ram Patriot Viper Elite Rgb 16gb Ddr5 6000mhz Cl30 (2).png",
-  3:  "img/componentes/Tarjeta De Video Asus Rog Astral Rtx 5090 32gb Gddr7 Oc (2).png",
-  4:  "img/componentes/Placa De Video Geforce Rtx 5060 8gb Msi Ventus 2x Oc White (2).png",
-  5:  "img/componentes/Mouse gamer de juego Redragon Griffin M607 negro (2).png",
-  6:  "img/componentes/Teclado Gamer Redragon Eisa Pro Se Wireless K686ak (2).png",
-  7:  "img/componentes/Placa De Video Geforce Rtx 5050 8gb Msi Shadow 2x Oc.png",
-  8:  "img/componentes/Gabinete Gamer Level Up Argos Atx Vidrio Templado Argb Color Negro (2).png",
-  9:  "img/componentes/Gabinete Gamer Xigmatek Aqua Nano Ii Arctic M-atx 7 X Fan Negro (2).png",
-  10: "img/laptops/Notebook Hp Gaming Victus 15.png",
-  11: "img/laptops/Lenovo ThinkPad E16 Gen 2 R5.png",
-  12: "img/laptops/Notebook Asus Vivobook M1502ya-bq580 Ryzen 7 5825u 16gb De Ram Ddr4 512gb Ssd M.2 Nvme Pcie, Amd Radeon Graphics (15,6) Full Hd 1920 X 1080 Ips Wi-fi 6e (802.11ax) Windows 11 Home, Color Cool S.png",
-  13: "img/laptops/Notebook Asus Vivobook X1404va-i512256 Intel Core I5 1334u 12gb Ram 256gb Ssd M.2 14 Fhd Ips Teclado Ingles W11 Liviana Color Quiet Blue Hf (2).png",
-  14: "img/laptops/Notebook Ryzen 5 3500u 16gb Ram 256gb Ssd 15.6 Gen2 Ryer Gris (2).png",
-  15: "img/laptops/Notebook Lenovo Ideapad 1 14IJL7 Procesador Intel Celeron N4500 4gb Ram Ddr4 128gb SSD Pantalla 14 HD Windows 11 S Color Gris.png",
-  16: "img/laptops/Notebook HP 15-fd2350la Intel Core Ultra 5 8GB RAM 512GB SSD 15,6 FHD Windows 11 Home (2).png",
-  17: "img/laptops/Notebook HP 255 G10 Ryzen 7.png",
-  18: "img/laptops/Notebook Hp 255 G10 Amd Ryzen 7 7730u 32gb Ssd 512gb Gris Oscuro (2).png",
-  19: "img/monitores/Monitor Arkham 25 Gamer 210hz Ips Fhd 1ms Hdmi Gris 2 (2).png",
-  20: "img/monitores/Monitor Gamer 24 Asus Tuf Gaming Full Hd 180hz 1ms Vg249ql3a Color Negro (2).png",
-  21: "img/monitores/Monitor Gamer 34 Curvo Altura Regulable 1440p 165hz G-sync Negro (2).png",
-  22: "img/monitores/Monitor Gamer Msi Mag 255f E20 25 Pulgadas Full Hd 200hz Color Negro (2).png",
-  23: "img/monitores/Monitor Gamer Viewsonic 24 Vx2429 Fhd 200hz Color Negro (2).png",
-  24: "img/monitores/Monitor Gamer XPG 24 Full HD 120Hz.png",
-  25: "img/monitores/Monitor Samsung 22 Essential S3 Flat 120 Hz Fhd 1920x1080 Color Negro (2).png",
-  26: "img/monitores/Monitor Samsung 24\' Odyssey G3 FHD 144Hz G30B (2).png",
-  27: "img/monitores/Monitor Xiaomi A27qi.png"
-};
 
 const SECCION_LINK = { 1: "monitores.html", 2: "laptops.html", 3: "componentes.html" };
 const SECCION_NOMBRE = { 1: "Monitores", 2: "Laptops", 3: "Componentes" };
@@ -281,7 +251,7 @@ function buscarProductos(q) {
   }
 
   const html = encontrados.map(p => {
-    const img  = IMAGENES[p.id_producto] || "img/placeholder.png";
+    const img  = p.imagen || "img/placeholder.png";
     const link = SECCION_LINK[p.id_categoria] || "index.html";
     const cat  = SECCION_NOMBRE[p.id_categoria] || "";
     const col  = SECCION_COLOR[p.id_categoria] || "#888";
@@ -354,7 +324,7 @@ function mostrarResultadosEnPagina(q) {
   }
   container.innerHTML = "";
   encontrados.forEach(p => {
-    const img = IMAGENES[p.id_producto] || p.imagen || "img/placeholder.png";
+    const img = p.imagen || "img/placeholder.png";
     container.appendChild(crearCardConImagen(p, img));
   });
   container.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -446,9 +416,6 @@ function crearCard(p) {
   return div;
 }
 </script>
-
-
-
 
 </body>
 </html>
