@@ -3,7 +3,10 @@ const router  = express.Router();
 const db      = require("../db");
 const jwt     = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "razer_secret_2025";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("Falta configurar la variable de entorno JWT_SECRET");
+}
 
 function soloAdmin(req, res, next) {
     const auth = req.headers.authorization;
