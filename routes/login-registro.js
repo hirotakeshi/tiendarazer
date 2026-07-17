@@ -5,7 +5,10 @@ const db      = require("../db");
 const bcrypt  = require("bcrypt");
 const jwt     = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET || "razer_secret_2025";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error("Falta configurar la variable de entorno JWT_SECRET");
+}
 
 // ── REGISTRO ─────────────────────────────────────────────────
 router.post("/register", async (req, res) => {
